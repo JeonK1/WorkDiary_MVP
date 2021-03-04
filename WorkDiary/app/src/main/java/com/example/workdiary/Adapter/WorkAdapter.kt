@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.workdiary.Adapter.Contract.WorkAdapterContract
 import com.example.workdiary.R
 import com.example.workdiary.Model.WorkInfo
 import com.example.workdiary.SQLite.DBManager
@@ -14,7 +15,8 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class WorkAdapter(val items:ArrayList<WorkInfo>): RecyclerView.Adapter<WorkAdapter.MyViewHolder>() {
+class WorkAdapter(val items:ArrayList<WorkInfo>): RecyclerView.Adapter<WorkAdapter.MyViewHolder>(), WorkAdapterContract.View, WorkAdapterContract.Model {
+
     interface  OnItemClickListener{
         fun OnItemClick(holder: MyViewHolder, view: View, position: Int)
     }
@@ -52,6 +54,7 @@ class WorkAdapter(val items:ArrayList<WorkInfo>): RecyclerView.Adapter<WorkAdapt
             }
         }
     }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val v = LayoutInflater.from(parent.context).inflate(R.layout.item_work, parent, false)
         return MyViewHolder(v)
@@ -72,7 +75,6 @@ class WorkAdapter(val items:ArrayList<WorkInfo>): RecyclerView.Adapter<WorkAdapt
         val startTimeHour = items[position].workStartTime.split(":")[0].toInt()
         val startTimeMin = items[position].workStartTime.split(":")[1].toInt()
         val startTimeStamp = startTimeHour*60 +startTimeMin
-
         val endTimeHour = items[position].workEndTime.split(":")[0].toInt()
         val endTimeMin = items[position].workEndTime.split(":")[1].toInt()
         val endTimeStamp = endTimeHour*60 + endTimeMin
@@ -83,11 +85,23 @@ class WorkAdapter(val items:ArrayList<WorkInfo>): RecyclerView.Adapter<WorkAdapt
         //xml에 적용하기
         holder.title.text = items[position].workTitle
         holder.setName.text = items[position].workSetName
-        holder.date.text = items[position].workDate.split("/")[1] + "월 " +
-                items[position].workDate.split("/")[2] + "일"
+        holder.date.text = """${items[position].workDate.split("/")[1]}월 ${items[position].workDate.split("/")[2]}일"""
         holder.dday.text = workDday
-        holder.workStartNEnd.text = "%02d".format(startTimeHour)+":"+"%02d".format(startTimeMin)+" ~ "+"%02d".format(endTimeHour)+":"+"%02d".format(endTimeMin)
-        holder.workTime.text = "( " +
-                "${workTimeHour}h "+"%02d".format(workTimeMin)+"m )"
+        holder.workStartNEnd.text = """${"%02d".format(startTimeHour)}:${"%02d".format(startTimeMin)} ~ ${"%02d".format(endTimeHour)}:${"%02d".format(endTimeMin)}"""
+        holder.workTime.text = """( ${workTimeHour}h ${"%02d".format(workTimeMin)}m )"""
+    }
+
+    /*** WorkAdapterContract.View ***/
+    override fun notifyAdapter() {
+        notifyDataSetChanged()
+    }
+
+    /*** WorkAdapterContract.Model ***/
+    override fun getItems(position: Int): WorkInfo {
+        return items[position]
+    }
+
+    override fun deleteItems(position: Int) {
+        items.removeAt(position)
     }
 }
