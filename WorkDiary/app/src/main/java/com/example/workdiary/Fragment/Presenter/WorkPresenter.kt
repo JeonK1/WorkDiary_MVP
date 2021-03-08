@@ -1,12 +1,14 @@
 package com.example.workdiary.Fragment.Presenter
 
 import android.content.Context
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
 import androidx.appcompat.app.AlertDialog
 import com.example.workdiary.Adapter.Contract.WorkAdapterContract
+import com.example.workdiary.Model.WorkInfo
 import com.example.workdiary.R
 import com.example.workdiary.SQLite.DBManager
 import kotlinx.android.synthetic.main.dialog_box.view.*
@@ -16,6 +18,7 @@ class WorkPresenter(
     private val adapterModel: WorkAdapterContract.Model,
     private val adapterView: WorkAdapterContract.View
 ) : WorkContract.Presenter {
+
     override fun clickItem(layout: LinearLayout) {
         if(layout.visibility == View.VISIBLE){
             view.hideLayout(layout)
@@ -46,15 +49,15 @@ class WorkPresenter(
 
     override fun deleteWork(context: Context, position: Int) {
         val dbManager = DBManager(context)
+        dbManager.deleteWork(adapterModel.getItems(position).wId)
         adapterModel.deleteItems(position)
         adapterView.notifyAdapter()
-        dbManager.deleteWork(adapterModel.getItems(position).wId)
     }
 
     override fun checkWork(context: Context, position: Int) {
         val dbManager = DBManager(context)
+        dbManager.setWorkCheck(adapterModel.getItems(position).wId)
         adapterModel.deleteItems(position)
         adapterView.notifyAdapter()
-        dbManager.setWorkCheck(adapterModel.getItems(position).wId)
     }
 }

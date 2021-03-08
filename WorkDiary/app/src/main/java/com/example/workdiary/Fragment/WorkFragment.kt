@@ -2,6 +2,7 @@ package com.example.workdiary.Fragment
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -43,7 +44,6 @@ class WorkFragment : Fragment(), WorkContract.View {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // Todo : 왠지 여기 충돌문제 생길거같은 느낌적인 느낌..? 없으면 다행
         recyclerViewInit()
         presenter = WorkPresenter(this, workAdapter, workAdapter)
     }
