@@ -9,14 +9,17 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.workdiary.Adapter.DiaryAdapter
+import com.example.workdiary.Fragment.Presenter.DiaryContract
+import com.example.workdiary.Fragment.Presenter.DiaryPresenter
 import com.example.workdiary.R
 import com.example.workdiary.SQLite.DBManager
 
 /**
  * A simple [Fragment] subclass.
  */
-class DiaryFragment : Fragment() {
+class DiaryFragment : Fragment(), DiaryContract.View {
 
+    lateinit var presenter: DiaryPresenter
     lateinit var diaryRecyclerView: RecyclerView
     lateinit var diaryAdapter: DiaryAdapter
 
@@ -32,27 +35,35 @@ class DiaryFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        presenter = DiaryPresenter(this)
         recyclerViewInit()
+        textViewInit()
+    }
+
+    private fun recyclerViewInit() {
+        val dbManager = DBManager(context!!)
+        val workList = dbManager.getDiaryAll()
+        diaryRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        diaryAdapter = DiaryAdapter(workList)
+        diaryRecyclerView.adapter = diaryAdapter
     }
 
     private fun textViewInit() {
         if(diaryAdapter.items.size!=0) {
-            activity!!.findViewById<TextView>(R.id.tv_main_comment).text = "아직 완료된 노동일정이 없어요"
-            activity!!.findViewById<TextView>(R.id.tv_main_comment).visibility = View.INVISIBLE
+            presenter.isNoItems(false)
         } else {
-            activity!!.findViewById<TextView>(R.id.tv_main_comment).text = "아직 완료된 노동일정이 없어요"
-            activity!!.findViewById<TextView>(R.id.tv_main_comment).visibility = View.VISIBLE
+            presenter.isNoItems(true)
         }
     }
-    private fun recyclerViewInit() {
-        val dbManager = DBManager(context!!)
-        val workList = dbManager.getDiaryAll()
 
-        diaryRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        diaryAdapter = DiaryAdapter(workList)
-        diaryRecyclerView.adapter = diaryAdapter
+    override fun showNoItems() {
+        activity!!.findViewById<TextView>(R.id.tv_main_comment).text = "아직 완료된 노동일정이 없어요"
+        activity!!.findViewById<TextView>(R.id.tv_main_comment).visibility = View.VISIBLE
+    }
 
-        textViewInit()
+    override fun hideNoItems() {
+        activity!!.findViewById<TextView>(R.id.tv_main_comment).text = "아직 완료된 노동일정이 없어요"
+        activity!!.findViewById<TextView>(R.id.tv_main_comment).visibility = View.INVISIBLE
     }
 
 

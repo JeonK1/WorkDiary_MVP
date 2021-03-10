@@ -5,13 +5,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.workdiary.Adapter.Contract.WorkForDiaryAdapterContract
 import com.example.workdiary.R
 import com.example.workdiary.Model.WorkInfo
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class WorkForDiaryAdapter(val items:ArrayList<WorkInfo>): RecyclerView.Adapter<WorkForDiaryAdapter.MyViewHolder>() {
+class WorkForDiaryAdapter(val items:ArrayList<WorkInfo>): RecyclerView.Adapter<WorkForDiaryAdapter.MyViewHolder>(), WorkForDiaryAdapterContract.Model, WorkForDiaryAdapterContract.View {
     interface  OnItemClickListener{
         fun OnItemClick(holder: MyViewHolder, view: View, position: Int): DiaryAdapter.OnLongItemClickListener?
     }
@@ -23,7 +24,6 @@ class WorkForDiaryAdapter(val items:ArrayList<WorkInfo>): RecyclerView.Adapter<W
         var workDay: TextView = itemView.findViewById(R.id.tv_itemworkfordiary_day)
         var workTime: TextView = itemView.findViewById(R.id.tv_itemworkfordiary_workTime)
         var money: TextView = itemView.findViewById(R.id.tv_itemworkfordiary_money)
-
 
         init {
             itemView.setOnClickListener {
@@ -60,5 +60,13 @@ class WorkForDiaryAdapter(val items:ArrayList<WorkInfo>): RecyclerView.Adapter<W
         holder.workDay.text = items[position].workDate.split("/")[2].toInt().toString()+"일"
         holder.workTime.text = "${workTimeHour}시간 "+"%02d".format(workTimeMin)+"분"
         holder.money.text = "${items[position].workMoney}원"
+    }
+
+    override fun notifyAdapter() {
+        notifyDataSetChanged()
+    }
+
+    override fun getItems(position: Int): WorkInfo {
+        return items[position]
     }
 }

@@ -1,8 +1,10 @@
 package com.example.workdiary.Activity
 
+import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.fragment.app.Fragment
@@ -19,6 +21,7 @@ class MainActivity : AppCompatActivity(), MainContract.View {
         MainPresenter(this)
     }
 
+    val ADD_WORK_ACTIVITY = 105
     val diaryFragment = DiaryFragment()
     val workFragment = WorkFragment()
 
@@ -82,7 +85,23 @@ class MainActivity : AppCompatActivity(), MainContract.View {
     override fun showAddWorkActivity() {
         // AddWorkActivity 실행
         val intent = Intent(this, AddWorkActivity::class.java)
-        startActivity(intent)
+        startActivityForResult(intent, ADD_WORK_ACTIVITY)
     }
 
+    override fun sendActivityResultToFragment(requestCode: Int, resultCode: Int, data: Intent?) {
+        // requestCode fragment로 전달하기
+        val fragment = supportFragmentManager.findFragmentById(R.id.fl_main_fragment)
+        if(fragment!=null){
+            fragment.onActivityResult(requestCode, resultCode, data)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if(requestCode == ADD_WORK_ACTIVITY){
+            if(resultCode == Activity.RESULT_OK){
+                presenter.getRequestCode(requestCode, resultCode, data)
+            }
+        }
+    }
 }

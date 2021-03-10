@@ -8,12 +8,13 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.workdiary.Adapter.Contract.DiaryAdapterContract
 import com.example.workdiary.Model.DiaryInfo
 import com.example.workdiary.R
 import kotlinx.android.synthetic.main.dialog_box.view.*
 import java.text.DecimalFormat
 
-class DiaryAdapter(val items:ArrayList<DiaryInfo>): RecyclerView.Adapter<DiaryAdapter.MyViewHolder>() {
+class DiaryAdapter(val items:ArrayList<DiaryInfo>): RecyclerView.Adapter<DiaryAdapter.MyViewHolder>(), DiaryAdapterContract.View, DiaryAdapterContract.Model {
     interface  OnLongItemClickListener{
         fun OnLongItemClick(holder: MyViewHolder, view: View, position: Int)
     }
@@ -61,5 +62,13 @@ class DiaryAdapter(val items:ArrayList<DiaryInfo>): RecyclerView.Adapter<DiaryAd
         val decimalFormat = DecimalFormat("###,###.##")
         val totalMoneyStr = decimalFormat.format(totalMoney)
         holder.totalMoney.text = "Total : "+totalMoneyStr+"원"
+    }
+
+    override fun notifyAdapter() {
+        notifyDataSetChanged()
+    }
+
+    override fun getItems(position: Int): DiaryInfo {
+        return items[position]
     }
 }

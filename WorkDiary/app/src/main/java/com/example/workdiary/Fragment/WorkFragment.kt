@@ -1,6 +1,8 @@
 package com.example.workdiary.Fragment
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
@@ -14,6 +16,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.workdiary.Activity.MainActivity
 import com.example.workdiary.Activity.Presenter.MainPresenter
 import com.example.workdiary.Adapter.WorkAdapter
 import com.example.workdiary.Fragment.Presenter.WorkContract
@@ -45,14 +48,20 @@ class WorkFragment : Fragment(), WorkContract.View {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         recyclerViewInit()
-        presenter = WorkPresenter(this, workAdapter, workAdapter)
+        presenter = WorkPresenter(context!!, this, workAdapter, workAdapter)
+        listenerInit()
+        initNoItemTextView()
     }
 
-    private fun recyclerViewInit() {
-        val dbManager = DBManager(context!!)
-        val workList = dbManager.getWorkAll()
-        workRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        workAdapter = WorkAdapter(workList)
+    private fun initNoItemTextView() {
+        if(workAdapter.items.size!=0) {
+            presenter.isNoItems(false)
+        } else {
+            presenter.isNoItems(true)
+        }
+    }
+
+    private fun listenerInit() {
         workAdapter.itemClickListener = object : WorkAdapter.OnItemClickListener {
             override fun OnItemClick(
                 holder: WorkAdapter.MyViewHolder,
@@ -80,11 +89,13 @@ class WorkFragment : Fragment(), WorkContract.View {
             }
         }
         workRecyclerView.adapter = workAdapter
-        if(workAdapter.items.size!=0) {
-            activity!!.findViewById<TextView>(R.id.tv_main_comment).visibility = View.INVISIBLE
-        } else {
-            activity!!.findViewById<TextView>(R.id.tv_main_comment).visibility = View.VISIBLE
-        }
+    }
+
+    private fun recyclerViewInit() {
+        val dbManager = DBManager(context!!)
+        val workList = dbManager.getWorkAll()
+        workRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        workAdapter = WorkAdapter(workList)
     }
 
     override fun showLayout(layout:LinearLayout) {
@@ -93,6 +104,16 @@ class WorkFragment : Fragment(), WorkContract.View {
 
     override fun hideLayout(layout:LinearLayout) {
         layout.visibility = View.GONE
+    }
+
+    override fun showNoItems() {
+        activity!!.findViewById<TextView>(R.id.tv_main_comment).text = "새로운 노동일정을 추가해주세요"
+        activity!!.findViewById<TextView>(R.id.tv_main_comment).visibility = View.VISIBLE
+    }
+
+    override fun hideNoItems() {
+        activity!!.findViewById<TextView>(R.id.tv_main_comment).text = "새로운 노동일정을 추가해주세요"
+        activity!!.findViewById<TextView>(R.id.tv_main_comment).visibility = View.INVISIBLE
     }
 
     override fun crateDialog(context: Context, position:Int, action: String, title: String, contents: String) {
@@ -119,6 +140,17 @@ class WorkFragment : Fragment(), WorkContract.View {
         mDialogView.tv_dialog_no.setOnClickListener{
             // 취소 버튼 누름
             mAlertDialog.dismiss()
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        val ADD_WORK_ACTIVITY = (activity as MainActivity).ADD_WORK_ACTIVITY
+        if(requestCode == ADD_WORK_ACTIVITY){
+            if(resultCode == Activity.RESULT_OK){
+                // AddWorkActivity를 통해 일정이 추가되었음
+                presenter.addWorkResentData(context)
+            }
         }
     }
 }

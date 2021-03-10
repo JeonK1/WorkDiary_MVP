@@ -1,5 +1,6 @@
 package com.example.workdiary.Activity.Presenter
 
+import android.content.Intent
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 
@@ -18,5 +19,9 @@ class MainPresenter(private val view: MainContract.View) : MainContract.Presente
     }
     override fun clickAddWorkBtn(){
         view.showAddWorkActivity()
+    }
+
+    override fun getRequestCode(requestCode: Int, resultCode: Int, data: Intent?) {
+        view.sendActivityResultToFragment(requestCode, resultCode, data)
     }
 }

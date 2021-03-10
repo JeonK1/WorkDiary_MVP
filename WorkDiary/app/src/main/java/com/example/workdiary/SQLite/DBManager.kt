@@ -2,10 +2,7 @@ package com.example.workdiary.SQLite
 
 import android.content.ContentValues
 import android.content.Context
-import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
-import android.util.Log
-import android.view.View
 import com.example.workdiary.Model.DiaryInfo
 import com.example.workdiary.Model.WorkInfo
 import java.util.ArrayList
@@ -147,7 +144,7 @@ class DBManager {
         val cursor = myDatabase.rawQuery(query, null)
         if(cursor.count!=0) {
             cursor.moveToFirst()
-            val workInfo = WorkInfo(
+            return WorkInfo(
                 cursor.getInt(cursor.getColumnIndex("wId")),
                 cursor.getString(cursor.getColumnIndex("wTitle")),
                 cursor.getString(cursor.getColumnIndex("wSetName")),
@@ -155,8 +152,25 @@ class DBManager {
                 cursor.getString(cursor.getColumnIndex("wStartTime")),
                 cursor.getString(cursor.getColumnIndex("wEndTime")),
                 cursor.getInt(cursor.getColumnIndex("wMoney"))
-            )
-            return workInfo;
+            );
+        }
+        return null
+    }
+
+    fun getRecentWork(): WorkInfo? {
+        val query = "select * from $tableName order by wId DESC limit 1"
+        val cursor = myDatabase.rawQuery(query, null)
+        if(cursor.count!=0) {
+            cursor.moveToFirst()
+            return WorkInfo(
+                cursor.getInt(cursor.getColumnIndex("wId")),
+                cursor.getString(cursor.getColumnIndex("wTitle")),
+                cursor.getString(cursor.getColumnIndex("wSetName")),
+                cursor.getString(cursor.getColumnIndex("wDate")),
+                cursor.getString(cursor.getColumnIndex("wStartTime")),
+                cursor.getString(cursor.getColumnIndex("wEndTime")),
+                cursor.getInt(cursor.getColumnIndex("wMoney"))
+            );
         }
         return null
     }

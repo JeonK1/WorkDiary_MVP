@@ -14,10 +14,13 @@ import com.example.workdiary.SQLite.DBManager
 import kotlinx.android.synthetic.main.dialog_box.view.*
 
 class WorkPresenter(
+    private val context: Context,
     private val view: WorkContract.View,
     private val adapterModel: WorkAdapterContract.Model,
     private val adapterView: WorkAdapterContract.View
 ) : WorkContract.Presenter {
+
+    val dbManager = DBManager(context)
 
     override fun clickItem(layout: LinearLayout) {
         if(layout.visibility == View.VISIBLE){
@@ -48,16 +51,29 @@ class WorkPresenter(
     }
 
     override fun deleteWork(context: Context, position: Int) {
-        val dbManager = DBManager(context)
         dbManager.deleteWork(adapterModel.getItems(position).wId)
         adapterModel.deleteItems(position)
         adapterView.notifyAdapter()
     }
 
     override fun checkWork(context: Context, position: Int) {
-        val dbManager = DBManager(context)
         dbManager.setWorkCheck(adapterModel.getItems(position).wId)
         adapterModel.deleteItems(position)
         adapterView.notifyAdapter()
+    }
+
+    override fun isNoItems(flag: Boolean) {
+        if(flag){
+            view.showNoItems()
+        } else {
+            view.hideNoItems()
+        }
+    }
+
+    override fun addWorkResentData(context: Context?) {
+        val workInfo = dbManager.getRecentWork()
+        if(workInfo!=null) {
+            adapterModel.addItems(workInfo)
+        }
     }
 }

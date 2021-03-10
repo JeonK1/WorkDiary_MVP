@@ -104,4 +104,8 @@ class WorkAdapter(val items:ArrayList<WorkInfo>): RecyclerView.Adapter<WorkAdapt
     override fun deleteItems(position: Int) {
         items.removeAt(position)
     }
+
+    override fun addItems(workInfo: WorkInfo) {
+        items.add(workInfo)
+    }
 }
