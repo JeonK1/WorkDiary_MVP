@@ -5,9 +5,9 @@ class DiaryPresenter(
 ) : DiaryContract.Presenter {
     override fun isNoItems(flag: Boolean) {
         if(flag){
-            view.hideNoItems()
-        } else {
             view.showNoItems()
+        } else {
+            view.hideNoItems()
         }
     }
 
