@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.fragment.app.Fragment
@@ -15,13 +14,18 @@ import com.example.workdiary.R
 import com.example.workdiary.Fragment.WorkFragment
 import kotlinx.android.synthetic.main.activity_main.*
 
+/************* MainActivity.kt *************/
+// 요약 : 메인 페이지, DiaryFragment와 WorkFragment를 포함하고 있다.
+/******************************************/
+
 class MainActivity : AppCompatActivity(), MainContract.View {
 
-    private val presenter: MainPresenter by lazy { // by lazy는 var 에서 lateinit을 사용하는 것 처럼 val에서 늦은 초기화를 위해 사용하는 문법이다.
+    // by lazy는 var 에서 lateinit을 사용하는 것 처럼 val에서 늦은 초기화를 위해 사용하는 문법이다.
+    private val presenter: MainPresenter by lazy {
         MainPresenter(this)
     }
 
-    val ADD_WORK_ACTIVITY = 105
+    val ADD_WORK_ACTIVITY = 105 // AddWorkActivity를 실행할 때의 flag 값 
     val diaryFragment = DiaryFragment()
     val workFragment = WorkFragment()
 
@@ -38,22 +42,25 @@ class MainActivity : AppCompatActivity(), MainContract.View {
     }
 
     private fun buttonInit() {
-        // button listener 모음
-        val diaryBtn:TextView = tv_main_diaryBtn
-        val workBtn:TextView = tv_main_workBtn
+        // button listener 초기화
+        val diaryBtn:TextView = tv_main_diaryBtn // '일지' 버튼
+        val workBtn:TextView = tv_main_workBtn // '노동' 버튼
         tv_main_diaryBtn.setOnClickListener {
+            // '일지' 버튼 클릭
             presenter.clickDiaryBtn(diaryBtn, workBtn, diaryFragment)
         }
         tv_main_workBtn.setOnClickListener {
+            // '노동' 버튼 클릭
             presenter.clickWorkBtn(diaryBtn, workBtn, workFragment)
         }
         tv_main_addBtn.setOnClickListener {
+            // '일정 추가하기' 버튼 클릭
             presenter.clickAddWorkBtn()
         }
     }
 
     override fun setFragment(fragment: Fragment){
-        // fragment 세팅
+        // fragment를 다른 fragment로 세팅
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction.addToBackStack(null)
         fragmentTransaction.replace(R.id.fl_main_fragment, fragment)
@@ -98,8 +105,10 @@ class MainActivity : AppCompatActivity(), MainContract.View {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        // 다른 Activity에서 되돌아왔을 때
         if(requestCode == ADD_WORK_ACTIVITY){
             if(resultCode == Activity.RESULT_OK){
+                // AddWorkActivity에서 넘어온 값들 fragment로 넘겨주기
                 presenter.getRequestCode(requestCode, resultCode, data)
             }
         }

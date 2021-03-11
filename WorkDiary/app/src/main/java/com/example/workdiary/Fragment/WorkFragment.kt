@@ -28,9 +28,10 @@ import kotlinx.android.synthetic.main.fragment_work.*
 import kotlinx.android.synthetic.main.item_work.*
 import java.util.*
 
-/**
- * A simple [Fragment] subclass.
- */
+/************* WorkFragment.kt *************/
+// 요약 : 노동 부분 Fragment, 현재까지 완료되지 않은 노동 내용을 확인할 수 있다.
+/******************************************/
+
 class WorkFragment : Fragment(), WorkContract.View {
 
     lateinit var presenter: WorkPresenter
@@ -54,6 +55,7 @@ class WorkFragment : Fragment(), WorkContract.View {
     }
 
     private fun initNoItemTextView() {
+        // 완료된 일정이 하나도 존재하지 않을경우 [아직 등록된 일정이 없어요] 라는 문구 보여주기
         if(workAdapter.items.size!=0) {
             presenter.isNoItems(false)
         } else {
@@ -62,13 +64,14 @@ class WorkFragment : Fragment(), WorkContract.View {
     }
 
     private fun listenerInit() {
+        // 클릭했을 때의 Listener 초기화
         workAdapter.itemClickListener = object : WorkAdapter.OnItemClickListener {
             override fun OnItemClick(
                 holder: WorkAdapter.MyViewHolder,
                 view: View,
                 position: Int
             ) {
-                // 클릭하면 삭제/확인 버튼 show/hide 하기
+                // item 클릭시, 클릭하면 삭제/확인 버튼 show/hide 하기
                 presenter.clickItem(view.findViewById(R.id.ll_itemwork_btnlayout))
             }
         }
@@ -78,13 +81,13 @@ class WorkFragment : Fragment(), WorkContract.View {
                 view: View,
                 position: Int
             ) {
-                // DialogView 생성
+                // item의 삭제버튼 클릭시, DialogView 생성
                 presenter.clickDelBtn(context!!, position, holder.date.text.toString(), holder.title.text.toString())
             }
         }
         workAdapter.okBtnClickListener = object : WorkAdapter.OnOKBtnClickListener{
             override fun OnOkBtnClick(holder: WorkAdapter.MyViewHolder, view: View, position: Int) {
-                // DialogView 생성
+                // item의 확인버튼 클릭시, DialogView 생성
                 presenter.clickOkBtn(context!!, position)
             }
         }
@@ -92,6 +95,7 @@ class WorkFragment : Fragment(), WorkContract.View {
     }
 
     private fun recyclerViewInit() {
+        // recyclerView의 내용을 등록된(완료되지 않은) 일정들을 추가하기
         val dbManager = DBManager(context!!)
         val workList = dbManager.getWorkAll()
         workRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -117,6 +121,7 @@ class WorkFragment : Fragment(), WorkContract.View {
     }
 
     override fun crateDialog(context: Context, position:Int, action: String, title: String, contents: String) {
+        // 다이얼로그 창 띄우기
         val mDialogView = LayoutInflater.from(this@WorkFragment.context!!).inflate(R.layout.dialog_box, null)
         val mBuilder = AlertDialog.Builder(this@WorkFragment.context!!).setView(mDialogView)
         val mAlertDialog = mBuilder.show()
@@ -129,9 +134,11 @@ class WorkFragment : Fragment(), WorkContract.View {
             // 확인 버튼 누름
             when(action){
                 "DEL" -> {
+                    // item 삭제하기
                     presenter.deleteWork(context, position)
                 }
                 "OK" -> {
+                    // item 확인 처리하기
                     presenter.checkWork(context, position)
                 }
             }
@@ -145,10 +152,11 @@ class WorkFragment : Fragment(), WorkContract.View {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        // MainActivity에서 onActivityResult의 내용이 넘어왔을 때
         val ADD_WORK_ACTIVITY = (activity as MainActivity).ADD_WORK_ACTIVITY
         if(requestCode == ADD_WORK_ACTIVITY){
             if(resultCode == Activity.RESULT_OK){
-                // AddWorkActivity를 통해 일정이 추가되었음
+                // AddWorkActivity를 통해 일정이 추가되었음을 확인 >> DB에 가장 최근에 등록된 내용 recyclerView에 추가하기
                 presenter.addWorkResentData(context)
             }
         }
