@@ -174,4 +174,9 @@ class DBManager {
         }
         return null
     }
+
+    fun clear(){
+        val query = "delete from $tableName"
+        myDatabase.execSQL(query)
+    }
 }
