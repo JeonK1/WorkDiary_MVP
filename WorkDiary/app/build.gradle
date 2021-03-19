@@ -6,6 +6,12 @@ android {
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
 
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
+
     defaultConfig {
         applicationId "com.example.workdiary"
         minSdkVersion 27
@@ -35,7 +41,7 @@ dependencies {
 
     // for test
     testImplementation 'junit:junit:4.12'
-    testImplementation 'org.robolectric:robolectric:3.0'
+    testImplementation 'org.robolectric:robolectric:4.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
