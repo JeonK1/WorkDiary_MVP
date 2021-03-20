@@ -4,7 +4,6 @@ import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
-import android.widget.AutoCompleteTextView
 import com.example.workdiary.SQLite.DBManager
 import java.util.*
 import kotlin.collections.ArrayList
@@ -80,7 +79,7 @@ class AddWorkPresenter(private val context:Context, private val view: AddWorkCon
 
     override fun clickDatePicker(listener: DatePickerDialog.OnDateSetListener) {
         view.showDatePicker(
-            listener
+            listener = listener
         )
     }
 
